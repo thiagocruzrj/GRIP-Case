@@ -1,6 +1,9 @@
 # GRIP Case Study 
 Migrating a monolithic application into cloud-native application, explaining step by step.
 
+## Part1 - Cloud Setup
+* A .pptx is file located in the "GRIP-Case/Part1-Cloud Setup" folder
+
 ## Tools used on Part2-Infrastructure
 Azure DevOps Pipelines
 * A pipeline was created with all the environments needed for an API to be pushed to production. 
@@ -26,17 +29,3 @@ To automatize the startup of creation of all the most critical resources on Azur
 * Container to store the .tfsate files (Terraform state)
 * Give the service principal access rule needed to assign roles in Terraform
 * Connect the Azure DevOps API to create the connection to our Azure Subscription
-
-
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
-
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 

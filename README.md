@@ -1,5 +1,5 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# GRIP Case Study 
+Migrating a monolithic application into cloud-native application, explaining step by step.
 
 ## Tools used on Part2-Infrastructure
 Azure DevOps Pipelines
@@ -8,8 +8,8 @@ Azure DevOps Pipelines
 
 ## Helm
 The package manager for Kubernetes. Used here to install ingress, cert-manager, and some tools like SSL-redirect.
-Ingress - to map traffic to different backends based on rules you define via the Kubernetes
-cert-manager - provides Helm charts as a first-class installation method on Kubernetes and manages non-namespaced resources in your cluster.
+* Ingress - to map traffic to different backends based on rules you define via the Kubernetes
+* cert-manager - provides Helm charts as a first-class installation method on Kubernetes and manages non-namespaced resources in your cluster.
 
 ## Terraform
 Used to create an AKS cluster with the best practices like:

@@ -1,0 +1,7 @@
+variables:
+  - name: clusterName
+    value: 'aks-cm-dev-auea-01'
+  - name: clusterRg
+    value: 'rg-cm-dev-auea-01'
+  - name: hostname
+    value: 'kubes-dev.Grip.io'

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grip-api-deploy
+  labels:
+    app: grip-api-app
+  namespace: {{ .Release.namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: grip-api-app
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: grip-api-app
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/api-env-cm.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: grip-api-app
+          image: crcnmgauea.azurecr.io/grip-api:{{ .Values.appTags.api}}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.port }}
+          env:
+            - name: ASPNETCORE_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: api-env-map
+                  key: urls
+            - name: ASPNETCORE_Environment
+              valueFrom:
+                configMapKeyRef:
+                  name: api-env-map
+                  key: environment
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.port }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.port }}
+            initialDelaySeconds: 0
+            periodSeconds: 15
+            timeoutSeconds: 2
+          resources:
+            requests:
+              memory: "400Mi"
+              cpu: "300m"
+            limits:
+              memory: "800Mi"
+              cpu: "2000m"
+      imagePullSecrets:
+        - name: acr-secrets

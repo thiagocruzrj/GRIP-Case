@@ -1,0 +1,24 @@
+# We need to copy the files so we can use them in multiple stages
+
+stages:
+  - stage: Publish
+    displayName: Publish
+    jobs:
+      - job: PublishdJob
+        displayName: Copy and Publish Artifacts
+        workspace:
+          clean: all
+        steps:
+          - task: CopyFiles@2
+            displayName: Copying files
+            inputs:
+              SourceFolder: "$(Build.SourcesDirectory)"
+              Contents: "**"
+              TargetFolder: "$(Build.ArtifactStagingDirectory)"
+              
+          - task: PublishPipelineArtifact@1
+            displayName: Publishing artifacts
+            inputs:
+              targetPath: "$(Build.ArtifactStagingDirectory)"
+              artifact: "$(artifactName)"
+              publishLocation: "pipeline"

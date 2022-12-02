@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-env-map
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  # property-like keys; each key maps to a simple value
+  urls: "http://+:{{ .Values.port }}"
+  environment: "Production"
+    

@@ -1,0 +1,36 @@
+trigger:
+  - master
+  - azure-pipelines
+
+pr: none  
+  
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  solutionPath: './GRIP.Api/Grip.Api.sln'
+  app_service_name: GripAPI
+
+stages:
+- template: templates/build-stage.yml
+
+- template: templates/release-stage.yml
+  parameters:
+    environment: CDA
+    app_service_name: $(app_service_name)
+    azure_service_connection: 'Grip - CD'
+
+- template: templates/release-stage.yml
+  parameters:
+    environment: TST
+    dependsOn: Publish_CDA
+    app_service_name: $(app_service_name)
+    azure_service_connection: 'Grip - Test'
+      
+- template: templates/release-stage.yml
+  parameters:
+    environment: PRD
+    dependsOn: Publish_TST
+    app_service_name: $(app_service_name)
+    azure_service_connection: 'Grip - Production'

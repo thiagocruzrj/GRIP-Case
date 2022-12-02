@@ -1,0 +1,62 @@
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        variables:
+          - template: variables-base.yml
+        steps:
+          - checkout: self
+            persistCredentials: true
+            
+          - script: |
+              docker build -f $(dockerfilePath) --build-arg CERT_BLOB_STORAGE_URI="$(CERT_BLOB_STORAGE_URI)" --build-arg CERT_BLOB_STORAGE_KEY="$(certKey)" --build-arg FEED_ACCESSTOKEN="$(System.AccessToken)" --build-arg RUN_TESTS=TRUE --target build -t $(imageRepository)test:$(buildId) $(dockerContext)
+              docker create -ti --name testcontainer  $(imageRepository)test:$(buildId)
+              docker cp testcontainer:/src/Grip.Api.Tests.UnitTests/TestResults/ $(Build.ArtifactStagingDirectory)/testresults
+              docker rm -fv testcontainer
+            displayName: Docker Build and Test
+            failOnStderr: true
+
+          - task: PublishTestResults@2
+            displayName: Publish Test Results
+            inputs:
+              testResultsFormat: "VSTest"
+              testResultsFiles: "*.trx"
+              searchFolder: $(Build.ArtifactStagingDirectory)/testresults
+              failTaskOnFailedTests: true
+              mergeTestResults: true
+              testRunTitle: "$(buildId)"
+
+          - script: |
+              docker build -f $(dockerfilePath) --build-arg CERT_BLOB_STORAGE_URI="$(CERT_BLOB_STORAGE_URI)" --build-arg CERT_BLOB_STORAGE_KEY="$(certKey)" --build-arg FEED_ACCESSTOKEN="$(System.AccessToken)" --build-arg RUN_TESTS=TRUE -t $(dockerRegistryServer)/$(imageRepository):$(buildId) -t $(dockerRegistryServer)/$(imageRepository):$(build) $(dockerContext)
+            displayName: Build Publish image
+
+          - task: Docker@2
+            displayName: Pushing the image
+            inputs:
+              command: push
+              repository: $(imageRepository)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(buildId)
+                $(build)
+
+          - task: CopyFiles@2
+            displayName: Copying Helm chart
+            inputs:
+              SourceFolder: "$(Build.SourcesDirectory)/helm"
+              Contents: "**"
+              TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+          - task: PublishPipelineArtifact@1
+            displayName: Publishing artifacts
+            inputs:
+              targetPath: "$(Build.ArtifactStagingDirectory)"
+              artifact: helmChart
+              publishLocation: "pipeline"
+          
+          - script: |
+              git tag Build$(buildId)
+              git push origin Build$(buildId)
+            displayName: Tag Git Commit with Build Id
+            workingDirectory: $(Build.SourcesDirectory)

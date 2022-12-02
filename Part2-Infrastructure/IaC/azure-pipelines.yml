@@ -1,0 +1,57 @@
+trigger:
+  - main
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  artifactName: "terraform"
+  terraformVersion: "0.15.0"
+  workingDirectory: "$(Pipeline.Workspace)/$(artifactName)"
+  
+stages:
+  # We need to publish the source to the artifacts folder so we can use it in multiple stages
+  - template: azure-devops-templates/copy-files.yml
+
+  # Development environment
+  - template: azure-devops-templates/terraform.yml
+    parameters:
+      environment: dev-auea-01
+      azure_service_connection: "Grip Manage - Non Prod - ADO Service Connection"
+      tfstate_storage_account: "stcminfranonprodauea"
+      azdo_environment_suffix: "-review"
+      depends_on: publish
+
+  # TST environment
+  - template: azure-devops-templates/terraform.yml
+    parameters:
+      environment: tst-auea-01
+      azure_service_connection: "Grip Manage - Non Prod - ADO Service Connection"
+      tfstate_storage_account: "stcminfranonprodauea"
+      depends_on: TerraformApply_dev_auea_01
+
+  # Staging environment
+  - template: azure-devops-templates/terraform.yml
+    parameters:
+      environment: stage-auea-01
+      azure_service_connection: "Grip Manage - Non Prod - ADO Service Connection"
+      tfstate_storage_account: "stcminfranonprodauea"
+      depends_on: TerraformApply_tst_auea_01
+
+  # Demo environment
+  - template: azure-devops-templates/terraform.yml
+    parameters:
+      environment: demo-auea-01
+      azure_service_connection: "Grip Manage - Prod - ADO Service Connection"
+      tfstate_storage_account: "stcminfraprodauea"
+      depends_on: TerraformApply_tst_auea_01
+
+  # Production environment
+  - template: azure-devops-templates/terraform.yml
+    parameters:
+      environment: prod-auea-01
+      azure_service_connection: "Grip Manage - Prod - ADO Service Connection"
+      tfstate_storage_account: "stcminfraprodauea"
+      depends_on: TerraformApply_stage_auea_01

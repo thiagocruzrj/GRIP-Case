@@ -1,0 +1,6 @@
+hostname: "kubes-dev.grip.io"
+port: 8080
+
+appTags:
+  api: latest
+  

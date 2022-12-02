@@ -1,0 +1,111 @@
+parameters:
+  - name: environment
+    type: string
+  - name: azdo_environment_suffix
+    type: string
+    default: ""
+  - name: azure_service_connection
+    type: string
+  - name: tfstate_storage_account
+    type: string
+  - name: depends_on
+    type: string
+
+stages:
+  - stage: TerraformPlan_${{ replace(parameters.environment, '-', '_') }}
+    displayName: "Terraform Plan - ${{ parameters.environment }}"
+    dependsOn: ${{ parameters.depends_on }}
+    jobs:
+      - deployment: TerraformPlanDeployment
+        environment: ${{ parameters.environment }}
+        displayName: "Environment: ${{ parameters.environment }}"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: TerraformInstaller@0
+                  displayName: "Installing Terraform"
+                  inputs:
+                    terraformVersion: $(terraformVersion)
+
+                - task: TerraformTaskV2@2
+                  displayName: "Initialising Terraform"
+                  inputs:
+                    provider: "azurerm"
+                    command: "init"
+                    commandOptions: "-input=false"
+                    backendServiceArm: ${{ parameters.azure_service_connection }}
+                    workingDirectory: "$(workingDirectory)/src"
+                    backendAzureRmResourceGroupName: "rg-cm-infra"
+                    backendAzureRmStorageAccountName: "${{ parameters.tfstate_storage_account }}"
+                    backendAzureRmContainerName: "terraform-state"
+                    backendAzureRmKey: "${{ parameters.environment }}.terraform.tfstate"
+
+                - task: TerraformTaskV2@2
+                  displayName: "Running terraform plan"
+                  inputs:
+                    provider: "azurerm"
+                    command: "plan"
+                    workingDirectory: "$(workingDirectory)/src"
+                    commandOptions: >-
+                      --var-file="$(workingDirectory)/env/${{ parameters.environment }}.tfvars"
+                      -out="${{ parameters.environment }}.tfplan"
+                    environmentServiceNameAzureRM: ${{ parameters.azure_service_connection }}
+
+                - task: PublishPipelineArtifact@1
+                  displayName: "Publishing ${{ parameters.environment }}.tfplan"
+                  inputs:
+                    displayName: Publish Terraform plan output
+                    targetPath: "$(workingDirectory)/src/${{ parameters.environment }}.tfplan"
+                    artifact: "tfplan-${{ parameters.environment }}" # The artifact folder needs to be unique across all environments
+                    publishLocation: "pipeline"
+
+  - stage: TerraformApply_${{ replace(parameters.environment, '-', '_') }}
+    displayName: "Terraform Apply - ${{ parameters.environment }}"
+    dependsOn: TerraformPlan_${{ replace(parameters.environment, '-', '_') }}
+    jobs:
+      - deployment: TerraformApplyDeployment
+        environment: "${{ parameters.environment }}${{ parameters.azdo_environment_suffix }}"
+        displayName: "Environment: ${{ parameters.environment }}"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadPipelineArtifact@2
+                  displayName: "Downloading source"
+                  inputs:
+                    buildType: "current"
+                    artifactName: "$(artifactName)"
+                    targetPath: "$(Pipeline.Workspace)"
+
+                - task: TerraformInstaller@0
+                  displayName: "Installing Terraform"
+                  inputs:
+                    terraformVersion: $(terraformVersion)
+
+                - task: TerraformTaskV2@2
+                  displayName: "Initialising Terraform"
+                  inputs:
+                    provider: "azurerm"
+                    command: "init"
+                    commandOptions: "-input=false"
+                    backendServiceArm: ${{ parameters.azure_service_connection }}
+                    workingDirectory: "$(workingDirectory)/src"
+                    backendAzureRmResourceGroupName: "rg-cm-infra"
+                    backendAzureRmStorageAccountName: "${{ parameters.tfstate_storage_account }}"
+                    backendAzureRmContainerName: "terraform-state"
+                    backendAzureRmKey: "${{ parameters.environment }}.terraform.tfstate"
+
+                # Uncomment to see if we need all of the copying stuff (e.g. copy-files.yml)
+                # - bash: |
+                #     cd ..
+                #     find $PWD -type f
+
+                - task: TerraformTaskV2@2
+                  displayName: "Running terraform apply"
+                  inputs:
+                    provider: "azurerm"
+                    command: "apply"
+                    workingDirectory: "$(workingDirectory)/src"
+                    commandOptions: "$(Pipeline.Workspace)/tfplan-${{ parameters.environment }}/${{ parameters.environment }}.tfplan"
+                    environmentServiceNameAzureRM: ${{ parameters.azure_service_connection }}

@@ -1,0 +1,42 @@
+parameters:
+  environment: ''
+  dependsOn: Build
+  azureServiceConnection: ''
+
+stages:
+  - stage: Publish_${{ replace(parameters.environment, '-', '_') }}
+    displayName: "Publish - ${{ parameters.environment }}"
+    dependsOn: ${{ parameters.dependsOn }}
+    jobs:
+      - deployment: HelmDeploy
+        environment: ${{ parameters.environment }}
+        displayName: "Environment: ${{ parameters.environment }}"
+        variables:
+          - template: variables-base.yml
+            parameters:
+              environmentName: ${{ parameters.environment }}
+          - template: variables-${{ parameters.environment }}.yml
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: HelmInstaller@0
+                  displayName: Install Helm
+                  inputs:
+                    helmVersion: 'latest'
+                    installKubectl: false
+
+                - task: HelmDeploy@0
+                  displayName: Deploy Helm chart
+                  inputs:
+                    connectionType: 'Azure Resource Manager'
+                    azureSubscription: ${{parameters.azureServiceConnection}}
+                    azureResourceGroup: $(clusterRg)
+                    kubernetesCluster: $(clusterName)
+                    useClusterAdmin: true
+                    command: upgrade
+                    chartType: 'FilePath'
+                    chartPath: '$(Pipeline.Workspace)/helmChart'
+                    namespace: 'Grip-api'
+                    releaseName: 'Gripapi'
+                    overrideValues: 'appTags.api=$(buildId),hostname=$(hostname)'

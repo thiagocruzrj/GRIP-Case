@@ -18,40 +18,24 @@ stages:
   # Development environment
   - template: azure-devops-templates/terraform.yml
     parameters:
-      environment: dev-auea-01
-      azure_service_connection: "Grip Manage - Non Prod - ADO Service Connection"
-      tfstate_storage_account: "stcminfranonprodauea"
+      environment: dev-01
+      azure_service_connection: "Grip - Non Prod - ADO Service Connection"
+      tfstate_storage_account: "infranonprod"
       azdo_environment_suffix: "-review"
       depends_on: publish
-
-  # TST environment
-  - template: azure-devops-templates/terraform.yml
-    parameters:
-      environment: tst-auea-01
-      azure_service_connection: "Grip Manage - Non Prod - ADO Service Connection"
-      tfstate_storage_account: "stcminfranonprodauea"
-      depends_on: TerraformApply_dev_auea_01
 
   # Staging environment
   - template: azure-devops-templates/terraform.yml
     parameters:
-      environment: stage-auea-01
-      azure_service_connection: "Grip Manage - Non Prod - ADO Service Connection"
-      tfstate_storage_account: "stcminfranonprodauea"
-      depends_on: TerraformApply_tst_auea_01
-
-  # Demo environment
-  - template: azure-devops-templates/terraform.yml
-    parameters:
-      environment: demo-auea-01
-      azure_service_connection: "Grip Manage - Prod - ADO Service Connection"
-      tfstate_storage_account: "stcminfraprodauea"
-      depends_on: TerraformApply_tst_auea_01
+      environment: stage-01
+      azure_service_connection: "Grip - Non Prod - ADO Service Connection"
+      tfstate_storage_account: "infranonprod"
+      depends_on: TerraformApply_dev_auea_01
 
   # Production environment
   - template: azure-devops-templates/terraform.yml
     parameters:
-      environment: prod-auea-01
-      azure_service_connection: "Grip Manage - Prod - ADO Service Connection"
-      tfstate_storage_account: "stcminfraprodauea"
+      environment: prod-01
+      azure_service_connection: "Grip - Prod - ADO Service Connection"
+      tfstate_storage_account: "infranonprod"
       depends_on: TerraformApply_stage_auea_01

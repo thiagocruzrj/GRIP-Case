@@ -1,7 +1,7 @@
 variables:
   - name: clusterName
-    value: 'aks-cm-tst-auea-01'
+    value: 'aks-cm-tst-01'
   - name: clusterRg
-    value: 'rg-cm-tst-auea-01'
+    value: 'rg-cm-tst-01'
   - name: hostname
     value: 'kubes-tst.Grip.io'

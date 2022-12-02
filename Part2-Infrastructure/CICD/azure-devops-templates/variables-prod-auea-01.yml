@@ -1,7 +1,7 @@
 variables:
   - name: clusterName
-    value: 'aks-cm-prod-auea-01'
+    value: 'aks-cm-prod-01'
   - name: clusterRg
-    value: 'rg-cm-prod-auea-01'
+    value: 'rg-cm-prod-01'
   - name: hostname
     value: 'kubes-prod.Grip.io'

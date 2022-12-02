@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: grip-api-app
-          image: crcnmgauea.azurecr.io/grip-api:{{ .Values.appTags.api}}
+          image: grip.azurecr.io/grip-api:{{ .Values.appTags.api}}
           imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.port }}

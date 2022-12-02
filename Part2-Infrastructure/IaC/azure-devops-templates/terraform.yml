@@ -36,7 +36,7 @@ stages:
                     commandOptions: "-input=false"
                     backendServiceArm: ${{ parameters.azure_service_connection }}
                     workingDirectory: "$(workingDirectory)/src"
-                    backendAzureRmResourceGroupName: "rg-cm-infra"
+                    backendAzureRmResourceGroupName: "rg-infra"
                     backendAzureRmStorageAccountName: "${{ parameters.tfstate_storage_account }}"
                     backendAzureRmContainerName: "terraform-state"
                     backendAzureRmKey: "${{ parameters.environment }}.terraform.tfstate"
@@ -91,7 +91,7 @@ stages:
                     commandOptions: "-input=false"
                     backendServiceArm: ${{ parameters.azure_service_connection }}
                     workingDirectory: "$(workingDirectory)/src"
-                    backendAzureRmResourceGroupName: "rg-cm-infra"
+                    backendAzureRmResourceGroupName: "rg-infra"
                     backendAzureRmStorageAccountName: "${{ parameters.tfstate_storage_account }}"
                     backendAzureRmContainerName: "terraform-state"
                     backendAzureRmKey: "${{ parameters.environment }}.terraform.tfstate"

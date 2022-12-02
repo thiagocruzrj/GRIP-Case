@@ -20,7 +20,7 @@ spec:
       labels:
         app: grip-api-app
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/api-env-cm.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/api-env-.yaml") . | sha256sum }}
     spec:
       containers:
         - name: grip-api-app

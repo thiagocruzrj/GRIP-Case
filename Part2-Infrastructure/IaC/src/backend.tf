@@ -1,6 +1,6 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "rg-cm-infra"
+    resource_group_name  = "rg-infra"
     storage_account_name = "infranonprod" # infra=Infrastructure, nonprod=Non Production environment
     container_name       = "terraform-state"
     key                  = "dev-01.terraform-utils.tfstate"

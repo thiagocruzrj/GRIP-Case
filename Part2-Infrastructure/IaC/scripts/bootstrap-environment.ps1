@@ -9,7 +9,7 @@ $TENANT_ID = "d8976bcc-d5c3-4d7d-90af-e5ac6cab2df6"
 $SUBSCRIPTION_ID = "95f5a267-ee2c-49be-9222-b46dc8be7447"
 $SUBSCRIPTION_NAME = "Grip - Non Prod"
 
-$RESOURCE_GROUP_NAME = "rg-cm-infra" # This must be unique to the Subscription
+$RESOURCE_GROUP_NAME = "rg-infra" # This must be unique to the Subscription
 $STORAGE_ACCOUNT_NAME = "nfranonprod" # This must be unique globally
 $LOCATION = "East US"
 
@@ -61,7 +61,7 @@ az ad group create --display-name "Grip - External Developers" --mail-nickname "
 # Azure DevOps Service Connections allow us to run terraform and deploy our apps into the Azure Subscription
 # from Azure DevOps Pipelines
 
-$ADO_SERVICE_PRINCIPAL_URI = "http://cm-ado-service-connection"
+$ADO_SERVICE_PRINCIPAL_URI = "http://ado-service-connection"
 $ADO_SERVICE_PRINCIPAL_NAME = "$SUBSCRIPTION_NAME - ADO Service Connection"
 
 # We can generate a new one in Azure DevOps

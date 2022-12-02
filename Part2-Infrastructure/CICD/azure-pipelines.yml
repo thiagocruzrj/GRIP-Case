@@ -17,20 +17,20 @@ stages:
 
 - template: templates/release-stage.yml
   parameters:
-    environment: CDA
+    environment: DEV
     app_service_name: $(app_service_name)
     azure_service_connection: 'Grip - CD'
 
 - template: templates/release-stage.yml
   parameters:
-    environment: TST
-    dependsOn: Publish_CDA
+    environment: STG
+    dependsOn: Publish_DEV
     app_service_name: $(app_service_name)
-    azure_service_connection: 'Grip - Test'
+    azure_service_connection: 'Grip - stage'
       
 - template: templates/release-stage.yml
   parameters:
     environment: PRD
-    dependsOn: Publish_TST
+    dependsOn: Publish_STG
     app_service_name: $(app_service_name)
     azure_service_connection: 'Grip - Production'

@@ -11,7 +11,7 @@ $SUBSCRIPTION_NAME = "Grip - Non Prod"
 
 $RESOURCE_GROUP_NAME = "rg-cm-infra" # This must be unique to the Subscription
 $STORAGE_ACCOUNT_NAME = "nfranonprod" # This must be unique globally
-$LOCATION = "Australia East"
+$LOCATION = "East US"
 
 # This will open up a browser tab, where you will be asked to sign in
 Write-Host "Signing into Azure" -ForegroundColor Cyan

@@ -1,6 +1,4 @@
-################################################
 # AKS Cluster
-################################################
 
 data "azuread_group" "aks_azuread_group" {
   display_name = var.aks_management_group

@@ -1,4 +1,4 @@
-# GRIP Case Study 
+# GRIP Case Assignment 
 Migrating a monolithic application into cloud-native application, explaining step by step.
 
 ## Part1 - Cloud Setup

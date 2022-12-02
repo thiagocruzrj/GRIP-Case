@@ -2,7 +2,7 @@
 Migrating a monolithic application into cloud-native application, explaining step by step.
 
 ## Part1 - Cloud Setup
-* The .pptx and .pds files are located in the "GRIP-Case/Part1-Cloud Setup" folder
+* The .pptx and .pdf files are located in the "GRIP-Case/Part1-Cloud Setup" folder
 
 ## Tools used on Part2-Infrastructure
 Azure DevOps Pipelines
